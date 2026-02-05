@@ -23,8 +23,6 @@ bun install
 
 **重要：** 首次使用前必须配置 Cloudflare R2 凭证
 
-详细的配置步骤请查看：**[SETUP.md - 配置指南](./SETUP.md)**
-
 快速配置：
 ```bash
 # 复制环境变量模板
