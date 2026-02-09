@@ -32,6 +32,7 @@ cp .env.example .env
 # R2_ACCOUNT_ID=your-account-id
 # R2_ACCESS_KEY_ID=your-access-key-id
 # R2_SECRET_ACCESS_KEY=your-secret-access-key
+# R2_ACCOUNT_TOKEN=your-account-token
 ```
 
 获取凭证：https://dash.cloudflare.com/ → R2 → Manage R2 API Tokens
@@ -60,7 +61,7 @@ console.log(content); // 输出: Hello, R2!
 ### 4. 运行示例
 
 ```bash
-bun run src/example.ts
+bun run example
 ```
 ## 项目结构
 

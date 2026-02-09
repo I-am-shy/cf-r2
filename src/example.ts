@@ -12,6 +12,8 @@ import {
   uploadPart,
   completeMultipartUpload,
   listBuckets,
+  headBucket,
+  getBucketLocation
 } from './index.js';
 
 // 获取文件名
@@ -66,11 +68,17 @@ async function listFiles(bucket:string, option?:{maxLength?:number}) {
     const result = await listObjectsV2(bucket, {
       maxKeys: option?.maxLength || 10,
     });
+    const domains = await getBucketDomains(bucket);    
     if (result.Contents && result.Contents.length > 0) {
       console.log(`✅ "${bucket}" (${result.Contents?.length} 个文件)：`);
       const files = result.Contents.map((file, index) => {
-        console.log(`  ${index + 1}.📄 ${file.Key} (${file.Size} bytes)`);
-        return file.Key;
+        const fileUrl = domains.length > 0 ? 'https://' + domains[0] + '/' + file.Key : '';
+        console.log(`  ${index + 1}.📄 ${file.Key} (${file.Size} bytes) \t ${fileUrl? '🔗 ' + fileUrl : ''}`);
+        return {
+          fileName: file.Key,
+          fileSize: file.Size,
+          fileUrl: fileUrl,
+        };
       });
       return files;
     } else {
@@ -180,6 +188,51 @@ async function listAllBuckets(): Promise<(string | undefined)[] | undefined> {
     }
   }
 }
+
+/**
+ * 获取已启用的存储桶自定义域名列表
+ * @param bucketName 存储桶名称
+ * @returns 自定义域名列表
+ */
+export async function getBucketDomains(bucketName: string) {
+
+  interface Domain {
+    domain: string;
+    status:{
+      ssl:string;
+      ownership:string
+    }
+    enabled:boolean;
+  }
+
+  try{
+
+    if(!process.env.R2_ACCOUNT_TOKEN){
+      throw new Error('R2_ACCOUNT_TOKEN 未配置');
+    }
+
+    const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.R2_ACCOUNT_ID}/r2/buckets/${bucketName}/domains/custom`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${process.env.R2_ACCOUNT_TOKEN}`,
+      },
+    });
+
+    if(!response.ok){
+      throw new Error('获取自定义域名失败');
+    }
+
+    const data = await response.json() as {result: {domains: Domain[]}};
+    
+    // 获取已启用的自定义域名
+    const domains = data.result.domains.map(item => item.enabled ? item.domain : null).filter(item => item !== null);
+    return domains;
+  } catch (error) {
+    console.error('获取自定义域名失败:', error);
+    return [];
+  }
+}
+
 
 // 主函数
 async function main() {
