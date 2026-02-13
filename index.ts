@@ -220,7 +220,7 @@ async function downloadFile(bucket:string, fileName:string, option?:{customFileN
     }
     await Bun.write(process.cwd()+"/downloads/"+(option?.customFileName || fileName), content);
     console.log('文件下载成功:', process.cwd()+"/downloads/"+(option?.customFileName || fileName));
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   } catch (error) {
     console.error('文件下载失败:', error);
   }
@@ -235,10 +235,10 @@ async function deleteFile(bucket:string, fileName:string) {
   try {
     await deleteObject(bucket, fileName);
     console.log(`${bucket} 中的 ${fileName} 文件已删除`);
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   } catch (error: any) {
     console.error(`文件 ${fileName} 删除失败\n`, error);
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   }
 }
 
@@ -266,10 +266,10 @@ async function uploadFile(bucket:string, filePath:string, option?:{customFileNam
       contentType: file.type,
     });
     loading.succeed(chalk.green("文件上传成功"+file.name));
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   } catch (error) {
     loading.fail(chalk.red("文件上传失败\n"));
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   }
 }
 
@@ -326,10 +326,10 @@ async function multipartUpload(bucket:string, filePath:string ,option?:{chunkSiz
     );
     console.log("\r\x1b[K"); // 清空当前行
     loading.succeed(chalk.green("分段上传完成"+fileName));
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   } catch (error: any) {
     loading.fail(chalk.red("分段上传失败\n"));
-    await input({ message: chalk.gray('按任意键继续...') ,theme:{prefix: ""}});
+    await input({ message: chalk.gray('按回车键继续...') ,theme:{prefix: ""}});
   }
 }
 

@@ -11,6 +11,9 @@
 - 🔒 安全的凭证管理
 - ⚡️ 基于 Bun 构建，性能优异
 
+> [!WARNING]
+> CLI 暂时仅支持上传、下载、删除文件
+
 ## 快速开始
 
 ### 1. 安装依赖
@@ -37,35 +40,20 @@ cp .env.example .env
 
 获取凭证：https://dash.cloudflare.com/ → R2 → Manage R2 API Tokens
 
-### 3. 使用示例
 
-```typescript
-import { initR2Client, putObject, getObject } from './src/index.js';
-
-// 初始化客户端
-initR2Client({
-  accountId: process.env.R2_ACCOUNT_ID!,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-});
-
-// 上传文件
-await putObject('my-bucket', 'file.txt', 'Hello, R2!');
-
-// 下载文件
-const object = await getObject('my-bucket', 'file.txt');
-const content = await object.Body?.transformToString();
-console.log(content); // 输出: Hello, R2!
-```
-
-### 4. 运行示例
+### 3. 运行示例
 
 ```bash
+# 运行代码使用示例（需要手动调整代码）
 bun run example
+# 运行 cli 界面
+bun run cli
 ```
+
 ## 项目结构
 
 ```
+index.ts              # cli 界面
 src/
 ├── config.ts           # R2 客户端配置
 ├── upload.ts           # 文件上传功能（7个函数）
@@ -119,54 +107,6 @@ src/
 - `getBucketLifecycleConfiguration()` / `putBucketLifecycleConfiguration()` - 生命周期配置
 - `getBucketLocation()` - 获取存储桶位置
 - `getBucketEncryption()` / `putBucketEncryption()` - 加密配置
-
-##  更多示例
-
-### 分段上传大文件
-
-```typescript
-import { createMultipartUpload, uploadPart, completeMultipartUpload } from './src/index.js';
-
-// 1. 启动分段上传
-const { UploadId } = await createMultipartUpload('bucket', 'large-file.bin');
-
-// 2. 上传分段
-const parts = [];
-for (let i = 0; i < 10; i++) {
-  const { ETag } = await uploadPart('bucket', 'large-file.bin', UploadId, i + 1, chunkData);
-  parts.push({ PartNumber: i + 1, ETag });
-}
-
-// 3. 完成上传
-await completeMultipartUpload('bucket', 'large-file.bin', UploadId, parts);
-```
-
-### 批量删除文件
-
-```typescript
-import { deleteObjects } from './src/index.js';
-
-await deleteObjects('my-bucket', [
-  'file1.txt',
-  'file2.txt',
-  'file3.txt',
-]);
-```
-
-### 设置 CORS
-
-```typescript
-import { putBucketCors } from './src/index.js';
-
-await putBucketCors('my-bucket', [
-  {
-    allowedOrigins: ['https://example.com'],
-    allowedMethods: ['GET', 'PUT'],
-    allowedHeaders: ['*'],
-    maxAgeSeconds: 3600,
-  },
-]);
-```
 
 ## 常见问题
 
