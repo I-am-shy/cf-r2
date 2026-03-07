@@ -252,14 +252,14 @@ async function uploadFile(bucket:string, filePath:string, option?:{customFileNam
   try {
     const file = new File([await Bun.file(filePath).bytes()], option?.customFileName || getFileName(filePath));
     // 大于 300 MB
-    if(file.size > 300 * 1024 * 1024){
-      console.log('文件大于 300 MB, 使用分段上传');
-      await multipartUpload(bucket, filePath, {
-        chunkSize: 50 * 1024 * 1024,
-        customFileName: option?.customFileName || getFileName(filePath),
-      });
-      return;
-    }
+    // if(file.size > 300 * 1024 * 1024){
+    //   console.log('文件大于 300 MB, 使用分段上传');
+    //   await multipartUpload(bucket, filePath, {
+    //     chunkSize: 50 * 1024 * 1024,
+    //     customFileName: option?.customFileName || getFileName(filePath),
+    //   });
+    //   return;
+    // }
     loading.start("正在上传" + file.name + " (共 " + (file.size / 1024 /1024).toFixed(2) + " MB)");
     const content = await file.bytes();
     await putObject(bucket,file.name, content, {
